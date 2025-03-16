@@ -102,6 +102,7 @@
     <None Remove="Resources\npcleftside.png" />
     <None Remove="Resources\default.frag" />
     <None Remove="Resources\default.vert" />
+    <None Remove="Resources\spline.vert" />
     <None Remove="Resources\grid.frag" />
     <None Remove="Resources\grid.vert" />
     <None Remove="Resources\skybox.frag" />
@@ -122,6 +123,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Json.xshd" />
     <EmbeddedResource Include="Resources\Ini.xshd" />
+    <EmbeddedResource Include="Resources\spline.vert" />
     <EmbeddedResource Include="Resources\Verse.xshd" />
     <EmbeddedResource Include="Resources\Xml.xshd" />
     <EmbeddedResource Include="Resources\Cpp.xshd" />

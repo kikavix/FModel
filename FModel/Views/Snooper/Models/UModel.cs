@@ -50,7 +50,7 @@ public abstract class UModel : IRenderableModel
 
     public string Path { get; }
     public string Name { get; }
-    public string Type { get; }
+    public string Type { get; protected set; }
     public int UvCount { get; }
     public uint[] Indices { get; set; }
     public float[] Vertices { get; set; }
@@ -219,7 +219,7 @@ public abstract class UModel : IRenderableModel
             collision.Setup();
         }
 
-        if (options.Models.Count == 1 && Sections.All(x => !x.Show))
+        if (options.Models.Count == 1 && Sections.All(x => !x.Show)) // visible if alone and invisible
         {
             IsVisible = true;
             foreach (var section in Sections)
@@ -227,9 +227,20 @@ public abstract class UModel : IRenderableModel
                 section.Show = true;
             }
         }
-        else foreach (var section in Sections)
+        else if (!IsVisible) // default: visible if one section is visible
         {
-            if (!IsVisible) IsVisible = section.Show;
+            foreach (var section in Sections)
+            {
+                if (section.Show)
+                {
+                    IsVisible = true;
+                    break;
+                }
+            }
+        }
+        else foreach (var section in Sections) // force visibility
+        {
+            section.Show = true;
         }
 
         IsSetup = true;
@@ -246,7 +257,13 @@ public abstract class UModel : IRenderableModel
         }
 
         if (this is SkeletalModel skeletalModel) skeletalModel.Render(shader);
-        else shader.SetUniform("uIsAnimated", false);
+        else if (this is SplineModel splineModel) splineModel.Render(shader);
+        else
+        {
+            shader.SetUniform("uIsAnimated", false);
+            shader.SetUniform("uIsSpline", false);
+        }
+
         if (!outline)
         {
             shader.SetUniform("uUvCount", UvCount);
@@ -290,9 +307,13 @@ public abstract class UModel : IRenderableModel
     public void PickingRender(Shader shader)
     {
         if (IsTwoSided) GL.Disable(EnableCap.CullFace);
-        if (this is SkeletalModel skeletalModel)
-            skeletalModel.Render(shader);
-        else shader.SetUniform("uIsAnimated", false);
+        if (this is SkeletalModel skeletalModel) skeletalModel.Render(shader);
+        if (this is SplineModel splineModel) splineModel.Render(shader);
+        else
+        {
+            shader.SetUniform("uIsAnimated", false);
+            shader.SetUniform("uIsSpline", false);
+        }
 
         Vao.Bind();
         foreach (var section in Sections)
