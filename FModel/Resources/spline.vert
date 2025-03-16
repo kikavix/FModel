@@ -39,7 +39,7 @@ vec3 getSafeNormal(vec3 vector) {
         return vector;
     }
 
-    if (squareSum < 1e-8f) {
+    if (squareSum < 1e-8) {
         return vec3(0.0); // Return a zero vector
     }
 
@@ -95,11 +95,11 @@ vec3 SplineEvalPos(GpuSplineMeshParams params, float a)
 
 vec3 ComputeRatioAlongSpline(GpuSplineMeshParams params, float distanceAlong)
 {
-    float alpha = 0f;
-    float minT = 0f;
-    float maxT = 1f;
+    float alpha = 0.0;
+    float minT = 0.0;
+    float maxT = 1.0;
 
-    const float SmallNumber = 1e-8f;
+    const float SmallNumber = 1e-8;
     bool bHasCustomBoundary = abs(params.SplineBoundaryMin - params.SplineBoundaryMax) > SmallNumber;
     if (bHasCustomBoundary)
     {
@@ -115,7 +115,7 @@ vec3 ComputeRatioAlongSpline(GpuSplineMeshParams params, float distanceAlong)
         float boundMinT = (boundMin - params.SplineBoundaryMin) / (params.SplineBoundaryMax - params.SplineBoundaryMin);
         float boundMaxT = (boundMax - params.SplineBoundaryMin) / (params.SplineBoundaryMax - params.SplineBoundaryMin);
 
-        const float MaxSplineExtrapolation = 4.0f;
+        const float MaxSplineExtrapolation = 4.0;
         minT = max(-MaxSplineExtrapolation, boundMinT);
         maxT = min(boundMaxT, MaxSplineExtrapolation);
     }
@@ -137,7 +137,7 @@ mat4 CalcSliceTransformAtSplineOffset(GpuSplineMeshParams params, vec3 computed)
     float minT = computed.y;
     float maxT = computed.z;
 
-    float hermiteAlpha = params.bSmoothInterpRollScale ? smoothstep(0.0f, 1.0f, alpha) : alpha;
+    float hermiteAlpha = params.bSmoothInterpRollScale ? smoothstep(0.0, 1.0, alpha) : alpha;
 
     vec3 splinePos;
     vec3 splineDir;
@@ -183,25 +183,25 @@ mat4 CalcSliceTransformAtSplineOffset(GpuSplineMeshParams params, vec3 computed)
     vec3 scale;
     switch (params.ForwardAxis) {
         case 0:
-        sliceTransform[0] = vec4(splineDir, 0f);
-        sliceTransform[1] = vec4(xVec, 0f);
-        sliceTransform[2] = vec4(yVec, 0f);
-        sliceTransform[3] = vec4(splinePos, 1f);
-        scale = vec3(1, useScale.x, useScale.y);
+        sliceTransform[0] = vec4(splineDir, 0.0);
+        sliceTransform[1] = vec4(xVec, 0.0);
+        sliceTransform[2] = vec4(yVec, 0.0);
+        sliceTransform[3] = vec4(splinePos, 1.0);
+        scale = vec3(1.0, useScale.x, useScale.y);
         break;
         case 1:
-        sliceTransform[0] = vec4(yVec, 0f);
-        sliceTransform[1] = vec4(splineDir, 0f);
-        sliceTransform[2] = vec4(xVec, 0f);
-        sliceTransform[3] = vec4(splinePos, 1f);
-        scale = vec3(useScale.y, 1, useScale.x);
+        sliceTransform[0] = vec4(yVec, 0.0);
+        sliceTransform[1] = vec4(splineDir, 0.0);
+        sliceTransform[2] = vec4(xVec, 0.0);
+        sliceTransform[3] = vec4(splinePos, 1.0);
+        scale = vec3(useScale.y, 1.0, useScale.x);
         break;
         case 2:
-        sliceTransform[0] = vec4(xVec, 0f);
-        sliceTransform[1] = vec4(yVec, 0f);
-        sliceTransform[2] = vec4(splineDir, 0f);
-        sliceTransform[3] = vec4(splinePos, 1f);
-        scale = vec3(useScale.x, useScale.y, 1);
+        sliceTransform[0] = vec4(xVec, 0.0);
+        sliceTransform[1] = vec4(yVec, 0.0);
+        sliceTransform[2] = vec4(splineDir, 0.0);
+        sliceTransform[3] = vec4(splinePos, 1.0);
+        scale = vec3(useScale.x, useScale.y, 1.0);
         break;
     }
 

@@ -87,7 +87,7 @@ void main()
         float distanceAlong = GetAxisValueRef(params.ForwardAxis, bindPos.xzy);
         vec3 computed = ComputeRatioAlongSpline(params, distanceAlong);
         mat4 sliceTransform = CalcSliceTransformAtSplineOffset(params, computed);
-        SetAxisValueRef(params.ForwardAxis, bindPos.xzy, 0f);
+        SetAxisValueRef(params.ForwardAxis, bindPos.xzy, 0.0);
 
         finalPos = (sliceTransform * bindPos.xzyw).xzyw;
         finalNormal = bindNormal;
