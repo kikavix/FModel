@@ -318,7 +318,7 @@ public class SettingsViewModel : ViewModel
         => Enum.GetValues<EGame>()
             .GroupBy(value => (int)value)
             .Select(group => group.First())
-            .OrderBy(value => (int)value == ((int)value & ~0xF));
+            .OrderBy(value => ((int)value & 0xFF) == 0);
     private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues<ELanguage>();
     private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues<EAesReload>();
     private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues<EDiscordRpc>();

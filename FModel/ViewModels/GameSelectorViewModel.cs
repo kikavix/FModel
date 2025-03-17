@@ -84,7 +84,7 @@ public class GameSelectorViewModel : ViewModel
         => Enum.GetValues<EGame>()
             .GroupBy(value => (int)value)
             .Select(group => group.First())
-            .OrderBy(value => (int)value == ((int)value & ~0xF));
+            .OrderBy(value => ((int)value & 0xFF) == 0);
     private IEnumerable<DirectorySettings> EnumerateDetectedGames()
     {
         yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks", EGame.GAME_UE5_6);
