@@ -58,8 +58,7 @@ public class ImGuiController : IDisposable
 
         IntPtr context = ImGui.CreateContext();
         ImGui.SetCurrentContext(context);
-        IntPtr imguiCtx = ImGui.CreateContext();
-        ImGui.SetCurrentContext(imguiCtx);
+        ImGuizmo.SetImGuiContext(context);
 
         var io = ImGui.GetIO();
         unsafe
