@@ -390,6 +390,12 @@ public class CUE4ParseViewModel : ViewModel
                 FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
         }
 
+        if (Provider.Versions.Game is EGame.GAME_UE4_LATEST or EGame.GAME_UE5_LATEST && !Provider.ProjectName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase)) // ignore fortnite globally
+        {
+            FLogger.Append(ELog.Warning, () =>
+                FLogger.Text($"Experimental UE version selected, likely unsuitable for '{Provider.GameDisplayName ?? Provider.ProjectName}'", Constants.WHITE, true));
+        }
+
         return Task.CompletedTask;
     }
 
