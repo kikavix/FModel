@@ -256,6 +256,7 @@ public class SnimGui
     {
         if (!ImGui.BeginMainMenuBar()) return;
 
+        const int cursorX = 360;
         Modal("Commands", ImGui.MenuItem("Commands"), () =>
         {
             ImGui.TextWrapped(
@@ -310,11 +311,9 @@ public class SnimGui
 ");
             ImGui.Separator();
 
-            var size = new Vector2(120, 0);
-            ImGui.InvisibleButton("", size * 3);
-            ImGui.SameLine();
+            ImGui.SetCursorPosX(cursorX);
             ImGui.SetItemDefaultFocus();
-            if (ImGui.Button("OK", size))
+            if (ImGui.Button("OK", new Vector2(120, 0)))
             {
                 ImGui.CloseCurrentPopup();
             }
@@ -334,11 +333,9 @@ public class SnimGui
             ImGui.TextWrapped(s.ToString());
             ImGui.Separator();
 
-            var size = new Vector2(120, 0);
-            ImGui.InvisibleButton("", size * 4);
-            ImGui.SameLine();
+            ImGui.SetCursorPosX(cursorX);
             ImGui.SetItemDefaultFocus();
-            if (ImGui.Button("OK", size))
+            if (ImGui.Button("OK", new Vector2(120, 0)))
             {
                 ImGui.CloseCurrentPopup();
             }
@@ -353,11 +350,9 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 ");
             ImGui.Separator();
 
-            var size = new Vector2(120, 0);
-            ImGui.InvisibleButton("", size * 4);
-            ImGui.SameLine();
+            ImGui.SetCursorPosX(cursorX);
             ImGui.SetItemDefaultFocus();
-            if (ImGui.Button("OK", size))
+            if (ImGui.Button("OK", new Vector2(120, 0)))
             {
                 ImGui.CloseCurrentPopup();
             }
@@ -861,7 +856,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             var matrix = transform.Matrix;
 
             if (ImGuizmo.Manipulate(ref view.M11, ref proj.M11, _guizmoOperation, MODE.LOCAL, ref matrix.M11) &&
-                Matrix4x4.Invert(transform.Relation, out var invRelation)) // matrix * invRelation = local matrix
+                Matrix4x4.Invert(transform.Relation, out var invRelation))
             {
                 // ^ long story short: there was issues with other transformation methods
                 // that's one way of modifying root elements without breaking the world matrix
