@@ -237,6 +237,19 @@ public partial class MainWindow
         }
     }
 
+    private async void OnFolderAudioClick(object sender, RoutedEventArgs e)
+    {
+        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        {
+            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.AudioFolder(cancellationToken, folder); });
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Successfully saved audio from ", Constants.WHITE);
+                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.ModelDirectory, true);
+            });
+        }
+    }
+
     private void OnFavoriteDirectoryClick(object sender, RoutedEventArgs e)
     {
         if (AssetsFolderName.SelectedItem is not TreeItem folder) return;

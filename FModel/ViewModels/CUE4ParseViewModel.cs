@@ -546,6 +546,9 @@ public class CUE4ParseViewModel : ViewModel
     public void AnimationFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Animations | EBulkType.Auto));
 
+    public void AudioFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Audio | EBulkType.Auto));
+
     public void Extract(CancellationToken cancellationToken, GameFile entry, bool addNewTab = false, EBulkType bulk = EBulkType.None)
     {
         Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", entry.Path);
@@ -894,6 +897,21 @@ public class CUE4ParseViewModel : ViewModel
                 SaveExport(pointer.Object.Value, updateUi);
                 return true;
             }
+            case UAkMediaAssetData when HasFlag(bulk, EBulkType.Audio):
+            case USoundWave when HasFlag(bulk, EBulkType.Audio):
+            {
+                var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
+                pointer.Object.Value.Decode(shouldDecompress, out var audioFormat, out var data);
+                var hasAf = !string.IsNullOrEmpty(audioFormat);
+                if (data == null || !hasAf)
+                {
+                    if (hasAf) FLogger.Append(ELog.Warning, () => FLogger.Text($"Unsupported audio format '{audioFormat}'", Constants.WHITE, true));
+                    return false;
+                }
+
+                SaveSound(Path.Combine(TabControl.SelectedTab.Entry.PathWithoutExtension).Replace('\\', '/'), audioFormat, data);
+                return false;
+            }
             default:
             {
                 if (!isNone && !saveTextures) return false;
@@ -948,6 +966,20 @@ public class CUE4ParseViewModel : ViewModel
             var audioPlayer = Helper.GetWindow<AudioPlayer>("Audio Player", () => new AudioPlayer().Show());
             audioPlayer.Load(data, savedAudioPath);
         });
+    }
+
+        private void SaveSound(string fullPath, string ext, byte[] data)
+    {
+        if (fullPath.StartsWith("/")) fullPath = fullPath[1..];
+        var savedAudioPath = Path.Combine(UserSettings.Default.AudioDirectory,
+            UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLowerInvariant()}";
+
+        Directory.CreateDirectory(savedAudioPath.SubstringBeforeLast('/'));
+        using var stream = new FileStream(savedAudioPath, FileMode.Create, FileAccess.Write);
+        using var writer = new BinaryWriter(stream);
+        writer.Write(data);
+        writer.Flush();
+        return;
     }
 
     private void SaveExport(UObject export, bool updateUi = true)
