@@ -1,3 +1,5 @@
+Fork of FModel that allows for bulk exporting of audio in a folder.  Right-click on a folder to see the new option. Exports the audio as the internal format (for example .wem).  May add an option to convert to .wav in the future.  Tested on only one game, YMMV.
+
 FModel - An Unreal Engine Archives Explorer in C#
 ------------------------------------------
 
