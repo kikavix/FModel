@@ -53,6 +53,7 @@ using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Serilog;
@@ -909,8 +910,32 @@ public class CUE4ParseViewModel : ViewModel
                     return false;
                 }
 
-                SaveSound(Path.Combine(TabControl.SelectedTab.Entry.PathWithoutExtension).Replace('\\', '/'), audioFormat, data);
-                return false;
+                var fullJson1 = JsonConvert.SerializeObject(pkg, Formatting.Indented);
+                //var fullJson = JsonConvert.SerializeObject(dummy, Formatting.Indented);
+                var fullJson2 = JsonConvert.SerializeObject(pointer.Object.Value, Formatting.Indented);
+                var fullJson3 = JsonConvert.SerializeObject(pointer.Outer, Formatting.Indented);
+                var fullJson4 = JsonConvert.SerializeObject(pkg.GetExports());
+                var fullJson5 = JsonConvert.SerializeObject(pointer.Package, Formatting.Indented);
+                string medianame = "";
+                JArray jsonArray = JArray.Parse(fullJson4);
+                foreach (JObject item in jsonArray)
+                {
+                    if (item.ContainsKey("Type") && item.GetValue("Type").ToString() == "AkMediaAsset")
+                    {
+                        medianame = item["Properties"]["MediaName"].ToString();
+                        break;
+                    }
+                    // TODO: get name for USoundWave, need example
+                }
+                var filename = Path.Combine(TabControl.SelectedTab.Entry.PathWithoutExtension).Replace('\\', '/');
+                if (medianame != "")
+                {
+                    var directory = Path.GetDirectoryName(filename);
+                    filename = Path.Combine(directory, medianame);
+                }
+
+                SaveSound(filename, audioFormat, data);
+                return true;
             }
             default:
             {
@@ -968,7 +993,7 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-        private void SaveSound(string fullPath, string ext, byte[] data)
+    private void SaveSound(string fullPath, string ext, byte[] data)
     {
         if (fullPath.StartsWith("/")) fullPath = fullPath[1..];
         var savedAudioPath = Path.Combine(UserSettings.Default.AudioDirectory,
