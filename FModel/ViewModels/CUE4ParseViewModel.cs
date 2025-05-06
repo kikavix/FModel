@@ -588,6 +588,7 @@ public class CUE4ParseViewModel : ViewModel
             case "manifest":
             case "uplugin":
             case "archive":
+            case "dnearchive": // Banishers: Ghosts of New Eden
             case "vmodule":
             case "uparam": // Steel Hunters
             case "verse":
@@ -596,6 +597,7 @@ public class CUE4ParseViewModel : ViewModel
             case "ini":
             case "txt":
             case "log":
+            case "lsd": // Days Gone
             case "bat":
             case "dat":
             case "cfg":
@@ -658,7 +660,7 @@ public class CUE4ParseViewModel : ViewModel
             {
                 var archive = entry.CreateReader();
                 var wwise = new WwiseReader(archive);
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), saveProperties, updateUi);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), saveProperties, updateUi);
                 foreach (var (name, data) in wwise.WwiseEncodedMedias)
                 {
                     SaveAndPlaySound(entry.Path.SubstringBeforeWithLast('/') + name, "WEM", data);
@@ -666,10 +668,12 @@ public class CUE4ParseViewModel : ViewModel
 
                 break;
             }
+            case "xvag":
+            case "at9":
             case "wem":
             {
                 var data = Provider.SaveAsset(entry);
-                SaveAndPlaySound(entry.Path, "WEM", data);
+                SaveAndPlaySound(entry.PathWithoutExtension, entry.Extension, data);
 
                 break;
             }
@@ -839,6 +843,25 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.AddImage(sourceFile.SubstringAfterLast('/'), false, bitmap, false, updateUi);
                 return false;
             }
+            case UAkAudioEvent when isNone && pointer.Object.Value is UAkAudioEvent { EventCookedData: { } wwiseData }:
+            {
+                foreach (var kvp in wwiseData.EventLanguageMap)
+                {
+                    if (!kvp.Value.HasValue) continue;
+
+                    foreach (var media in kvp.Value.Value.Media)
+                    {
+                        if (!Provider.TrySaveAsset(Path.Combine("Game/WwiseAudio/", media.MediaPathName.Text), out var data)) continue;
+
+                        var namedPath = string.Concat(
+                            Provider.ProjectName, "/Content/WwiseAudio/",
+                            media.DebugName.Text.SubstringBeforeLast('.').Replace('\\', '/'),
+                            " (", kvp.Key.LanguageName.Text, ")");
+                        SaveAndPlaySound(namedPath, media.MediaPathName.Text.SubstringAfterLast('.'), data);
+                    }
+                }
+                return false;
+            }
             case UAkMediaAssetData when isNone:
             case USoundWave when isNone:
             {
@@ -851,7 +874,7 @@ public class CUE4ParseViewModel : ViewModel
                     return false;
                 }
 
-                SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Entry.PathWithoutExtension).Replace('\\', '/'), audioFormat, data);
+                SaveAndPlaySound(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/'), audioFormat, data);
                 return false;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:

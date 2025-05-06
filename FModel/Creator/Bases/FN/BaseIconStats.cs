@@ -215,6 +215,7 @@ public class BaseIconStats : BaseIcon
         _informationPaint.TextSize = 50;
         _informationPaint.Color = SKColors.White;
         _informationPaint.Typeface = Utils.Typefaces.Bundle;
+        _informationPaint.FakeBoldText = true;
         while (_informationPaint.MeasureText(DisplayName) > Width - _headerHeight * 2)
         {
             _informationPaint.TextSize -= 1;
