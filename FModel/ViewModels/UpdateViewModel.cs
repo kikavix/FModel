@@ -31,8 +31,8 @@ public class UpdateViewModel : ViewModel
             GroupDescriptions = { new PropertyGroupDescription("Commit.Author.Date", new DateTimeToDateConverter()) }
         };
 
-        if (UserSettings.Default.NextUpdateCheck < DateTime.Now)
-            RemindMeCommand.Execute(this, null);
+        //if (UserSettings.Default.NextUpdateCheck < DateTime.Now)
+        //    RemindMeCommand.Execute(this, null);
     }
 
     public async Task Load()

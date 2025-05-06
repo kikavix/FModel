@@ -910,14 +910,9 @@ public class CUE4ParseViewModel : ViewModel
                     return false;
                 }
 
-                var fullJson1 = JsonConvert.SerializeObject(pkg, Formatting.Indented);
-                //var fullJson = JsonConvert.SerializeObject(dummy, Formatting.Indented);
-                var fullJson2 = JsonConvert.SerializeObject(pointer.Object.Value, Formatting.Indented);
-                var fullJson3 = JsonConvert.SerializeObject(pointer.Outer, Formatting.Indented);
-                var fullJson4 = JsonConvert.SerializeObject(pkg.GetExports());
-                var fullJson5 = JsonConvert.SerializeObject(pointer.Package, Formatting.Indented);
+                var packageExportsJson = JsonConvert.SerializeObject(pkg.GetExports());
                 string medianame = "";
-                JArray jsonArray = JArray.Parse(fullJson4);
+                JArray jsonArray = JArray.Parse(packageExportsJson);
                 foreach (JObject item in jsonArray)
                 {
                     if (item.ContainsKey("Type") && item.GetValue("Type").ToString() == "AkMediaAsset")
