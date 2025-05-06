@@ -106,6 +106,8 @@ public class FModelApiEndpoint : AbstractApiProvider
 
     public void CheckForUpdates(bool launch = false)
     {
+        // disable update checks for forked version
+        return;
         if (DateTime.Now < UserSettings.Default.NextUpdateCheck) return;
 
         if (launch)
